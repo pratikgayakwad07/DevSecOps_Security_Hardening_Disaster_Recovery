@@ -263,7 +263,7 @@ jobs:
 
       - name: Generate Terraform plan
         working-directory: terraform
-        run: terraform plan -input=false -out=tfplan
+        run: terraform plan -input=false -out=tfplan -lock=false
 
       - name: Export readable plan
         working-directory: terraform
@@ -281,7 +281,7 @@ jobs:
           
       - name: Apply reviewed Terraform plan
         working-directory: terraform
-        run: terraform apply -input=false -auto-approve tfplan
+        run: terraform apply -lock=false -input=false -auto-approve tfplan 
   
 
   # ---------------- DEPLOY: ANSIBLE HARDENING ----------------
