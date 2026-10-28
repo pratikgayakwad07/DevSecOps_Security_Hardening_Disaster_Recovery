@@ -1,7 +1,8 @@
 resource "aws_security_group" "app" {
   name        = "${var.project_name}-app-sg"
-  description = "Application ingress only from trusted CIDR; no inbound SSH"
+  description = "Application ingress for HTTP and SSH"
   vpc_id      = var.vpc_id
+
   ingress {
     description = "Application HTTP"
     from_port   = 8080
@@ -9,20 +10,23 @@ resource "aws_security_group" "app" {
     protocol    = "tcp"
     cidr_blocks = [var.allowed_app_cidr]
   }
+
   ingress {
-    description = "Allow SSH from anywhere (or GitHub Actions)"
+    description = "Allow SSH from GitHub Actions"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] 
+    cidr_blocks = ["0.0.0.0/0"]
   }
+
   egress {
-    description = "Outbound for patching and AWS APIs; restrict further with endpoints/proxy as required"
+    description = "Outbound for patching and AWS APIs"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   tags = var.tags
 }
 resource "aws_iam_role" "instance" {
