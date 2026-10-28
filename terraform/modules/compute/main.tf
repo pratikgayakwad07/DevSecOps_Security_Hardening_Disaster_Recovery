@@ -9,6 +9,13 @@ resource "aws_security_group" "app" {
     protocol    = "tcp"
     cidr_blocks = [var.allowed_app_cidr]
   }
+  ingress {
+    description = "Allow SSH from anywhere (or GitHub Actions)"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
   egress {
     description = "Outbound for patching and AWS APIs; restrict further with endpoints/proxy as required"
     from_port   = 0
