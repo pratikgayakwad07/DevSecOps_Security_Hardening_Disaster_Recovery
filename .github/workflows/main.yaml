@@ -225,8 +225,8 @@ jobs:
 
   # ---------------- DEPLOY: PLAN & APPLY ----------------
 
-  terraform plan&apply:
-    name: Terraform Plan
+  terraform-plan-apply:
+    name: Terraform Plan & Apply
     runs-on: ubuntu-latest
     needs:
       - checkov
@@ -288,7 +288,7 @@ jobs:
   ansible-hardening:
     name: Ansible Security Hardening
     runs-on: ubuntu-latest
-    needs: terraform plan&apply
+    needs: terraform-plan-apply
     if: >-
       github.event_name == 'push' &&
       github.ref == format(
