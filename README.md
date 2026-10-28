@@ -8,6 +8,7 @@ Reusable Terraform modules, GitLab OIDC federation, Ansible OS hardening, CI sec
 
 - `terraform/modules/vpc`: VPC, public/private subnets, NAT, routing, VPC flow logs.
 - `terraform/modules/iam_oidc`: GitLab OIDC provider and scoped CI role.
+- `terraform/modules/security_monitoring`: private audit bucket, CloudTrail, GuardDuty, CloudWatch alarm, EventBridge, and SNS alerts.
 - `terraform/modules/compute`: private EC2 application node, encrypted EBS, instance profile, SSM access.
 - Root Terraform: CloudTrail, CloudWatch log group/alarms, GuardDuty, SNS, Secrets Manager placeholder, and module wiring.
 - `ansible/`: idempotent Ubuntu/Debian security hardening.

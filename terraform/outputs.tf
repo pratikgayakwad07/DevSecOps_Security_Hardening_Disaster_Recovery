@@ -4,8 +4,8 @@ output "public_subnet_ids" { value = module.vpc.public_subnet_ids }
 output "instance_id" { value = module.compute.instance_id }
 output "instance_private_ip" { value = module.compute.private_ip }
 output "github_actions_role_arn" {
-  value       = aws_iam_role.github_actions.arn
-  description = "Configure this ARN as GitHub Actions secret AWS_ROLE_ARN."
+  value       = module.iam_oidc.github_actions_role_arn
+  description = "Configure this ARN as the GitHub Actions secret AWS_ROLE_ARN."
 }
-output "security_alert_topic_arn" { value = aws_sns_topic.security_alerts.arn }
-output "cloudtrail_name" { value = aws_cloudtrail.main.name }
+output "security_alert_topic_arn" { value = module.security_monitoring.security_alert_topic_arn }
+output "cloudtrail_name" { value = module.security_monitoring.cloudtrail_name }

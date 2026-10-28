@@ -1,6 +1,6 @@
 variable "aws_region" {
   type    = string
-  default = "ap-south-1"
+  default = "us-east-1"
 }
 
 variable "project_name" {
@@ -30,7 +30,7 @@ variable "private_subnet_cidrs" {
 
 variable "availability_zones" {
   type    = list(string)
-  default = ["ap-south-1a", "ap-south-1b"]
+  default = ["us-east-1a", "us-east-1b"]
 }
 
 variable "enable_nat_gateway" {
@@ -38,20 +38,15 @@ variable "enable_nat_gateway" {
   default = true
 }
 
-variable "gitlab_url" {
-  type    = string
-  default = "https://gitlab.com"
-}
-
-variable "gitlab_project_path" {
+variable "github_repository" {
   type        = string
-  description = "Exact namespace/project path, e.g. group/subgroup/task5-secops"
+  description = "Exact owner/repository allowed to assume the GitHub Actions role."
 }
 
-variable "gitlab_ref" {
+variable "github_ref" {
   type        = string
   default     = "main"
-  description = "Allowed branch/ref in the GitLab OIDC subject claim."
+  description = "Protected branch allowed to assume the GitHub Actions role."
 }
 
 variable "state_bucket_arn" {
@@ -59,19 +54,9 @@ variable "state_bucket_arn" {
   description = "ARN of the pre-created Terraform state bucket."
 }
 
-variable "state_lock_table_arn" {
-  type        = string
-  description = "ARN of the pre-created DynamoDB state lock table."
-}
-
 variable "instance_type" {
   type    = string
   default = "t3.small"
-}
-
-variable "ami_id" {
-  type        = string
-  description = "Current supported Ubuntu LTS AMI ID for selected region."
 }
 
 variable "allowed_app_cidr" {

@@ -1,45 +1,37 @@
-locals {
-  gitlab_host    = trimsuffix(trimprefix(var.gitlab_url, "https://"), "/")
-  gitlab_issuer  = var.gitlab_url
-  gitlab_subject = "project_path:${var.gitlab_project_path}:ref_type:branch:ref:${var.gitlab_ref}"
+resource "aws_iam_openid_connect_provider" "github" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = ["6938fd4d98bab03faadb97b34396831e3780aea1"]
+  tags            = var.tags
 }
-resource "aws_iam_openid_connect_provider" "gitlab" {
-  url            = local.gitlab_issuer
-  client_id_list = ["sts.amazonaws.com"]
-  # AWS now supports thumbprint discovery for many providers; omit thumbprint_list
-  # unless your AWS provider/account requires an explicitly configured CA thumbprint.
-  tags = var.tags
-}
-resource "aws_iam_role" "gitlab_ci" {
-  name = "${var.project_name}-gitlab-ci"
+
+resource "aws_iam_role" "github_actions" {
+  name = "${var.project_name}-github-actions"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow"
-      Principal = {
-        Federated = aws_iam_openid_connect_provider.gitlab.arn
-      }
-      Action = "sts:AssumeRoleWithWebIdentity"
-      Condition = {
-        StringEquals = {
-          "${local.gitlab_host}:aud" = "sts.amazonaws.com"
-          "${local.gitlab_host}:sub" = local.gitlab_subject
-        }
-      }
+      Effect    = "Allow"
+      Principal = { Federated = aws_iam_openid_connect_provider.github.arn }
+      Action    = "sts:AssumeRoleWithWebIdentity"
+      Condition = { StringEquals = {
+        "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+        "token.actions.githubusercontent.com:sub" = "repo:${var.github_repository}:ref:refs/heads/${var.github_ref}"
+      } }
     }]
   })
   max_session_duration = 3600
   tags                 = var.tags
 }
-# Scope this role to the resources the pipeline actually manages. State bucket/table
-# permissions are included; the example infrastructure policy is intentionally not AdministratorAccess.
-resource "aws_iam_role_policy" "gitlab_ci_state" {
+
+resource "aws_iam_role_policy" "github_actions_state" {
   name = "${var.project_name}-state-access"
-  role = aws_iam_role.gitlab_ci.id
-  policy = jsonencode({ Version = "2012-10-17", Statement = [
-    { Sid = "StateBucketList", Effect = "Allow", Action = ["s3:ListBucket"], Resource = var.state_bucket_arn },
-    { Sid = "StateObjectAccess", Effect = "Allow", Action = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"], Resource = "${var.state_bucket_arn}/*" },
-    { Sid = "LockTableAccess", Effect = "Allow", Action = ["dynamodb:DescribeTable", "dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem", "dynamodb:UpdateItem"], Resource = var.state_lock_table_arn },
-    { Sid = "TerraformReadDiscovery", Effect = "Allow", Action = ["sts:GetCallerIdentity", "ec2:Describe*", "iam:GetRole", "iam:GetPolicy", "iam:GetPolicyVersion", "iam:ListAttachedRolePolicies", "iam:ListRolePolicies", "iam:ListOpenIDConnectProviders", "iam:GetOpenIDConnectProvider", "logs:DescribeLogGroups", "cloudtrail:DescribeTrails", "guardduty:ListDetectors", "s3:GetBucketLocation", "s3:GetBucketVersioning", "s3:GetEncryptionConfiguration", "s3:GetBucketPublicAccessBlock", "sns:GetTopicAttributes", "sns:ListSubscriptionsByTopic"], Resource = "*" }
-  ] })
+  role = aws_iam_role.github_actions.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      { Sid = "StateBucketList", Effect = "Allow", Action = ["s3:ListBucket"], Resource = var.state_bucket_arn },
+      { Sid = "StateObjectAccess", Effect = "Allow", Action = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"], Resource = "${var.state_bucket_arn}/*" },
+      { Sid = "TerraformReadDiscovery", Effect = "Allow", Action = ["sts:GetCallerIdentity", "ec2:Describe*", "iam:GetRole", "iam:GetPolicy", "iam:GetPolicyVersion", "iam:ListAttachedRolePolicies", "iam:ListRolePolicies", "iam:ListOpenIDConnectProviders", "iam:GetOpenIDConnectProvider", "logs:DescribeLogGroups", "cloudtrail:DescribeTrails", "guardduty:ListDetectors", "s3:GetBucketLocation", "s3:GetBucketVersioning", "s3:GetEncryptionConfiguration", "s3:GetBucketPublicAccessBlock", "sns:GetTopicAttributes", "sns:ListSubscriptionsByTopic"], Resource = "*" }
+    ]
+  })
 }

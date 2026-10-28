@@ -1,0 +1,9 @@
+variable "project_name" { type = string }
+variable "aws_region" { type = string }
+variable "audit_bucket_name" { type = string }
+variable "log_retention_days" { type = number }
+variable "audit_log_retention_days" { type = number }
+variable "audit_noncurrent_retention_days" { type = number }
+variable "alert_email" { type = string }
+variable "monitored_instance_id" { type = string }
+variable "tags" { type = map(string) }
