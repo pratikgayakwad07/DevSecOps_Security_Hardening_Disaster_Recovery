@@ -37,15 +37,6 @@ module "vpc" {
   tags                    = var.tags
 }
 
-module "iam_oidc" {
-  source            = "./modules/iam_oidc"
-  project_name      = var.project_name
-  github_repository = var.github_repository
-  github_ref        = var.github_ref
-  state_bucket_arn  = var.state_bucket_arn
-  tags              = var.tags
-}
-
 module "compute" {
   source                     = "./modules/compute"
   project_name               = var.project_name
