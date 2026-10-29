@@ -102,9 +102,3 @@ resource "aws_instance" "this" {
     ignore_changes = [ami]
   }
 }
-
-# 5. Output Public IP for Ansible Dynamic Inventory
-output "instance_public_ip" {
-  description = "Public IP address of the EC2 instance"
-  value       = aws_instance.this.public_ip
-}
