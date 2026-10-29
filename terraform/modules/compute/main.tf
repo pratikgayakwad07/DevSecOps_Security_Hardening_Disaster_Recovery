@@ -63,11 +63,11 @@ resource "aws_key_pair" "generated_key" {
 resource "aws_instance" "this" {
   ami                         = var.ami_id
   instance_type               = var.instance_type
-  subnet_id                   = var.public_subnet_ids[0] # <--- CRITICAL: Must be a public subnet
+  subnet_id                   = var.public_subnet_ids[0]
   vpc_security_group_ids      = [aws_security_group.app.id]
   iam_instance_profile        = aws_iam_instance_profile.this.name
-  associate_public_ip_address = true                       # <--- CRITICAL: Must have a public IP
-  key_name                    = aws_key_pair.generated_key.key_name # <--- CRITICAL: Injects SSH key
+  associate_public_ip_address = true
+  key_name                    = aws_key_pair.generated_key.key_name
   monitoring                  = var.enable_detailed_monitoring
 
   metadata_options {
@@ -83,8 +83,8 @@ resource "aws_instance" "this" {
     delete_on_termination = true
   }
 
-  ebs_optimized             = true
-  disable_api_termination   = false
+  ebs_optimized           = true
+  disable_api_termination = false
 
   user_data = <<-EOF
     #!/bin/bash
@@ -101,4 +101,10 @@ resource "aws_instance" "this" {
   lifecycle {
     ignore_changes = [ami]
   }
+}
+
+# 5. Output Public IP for Ansible Dynamic Inventory
+output "instance_public_ip" {
+  description = "Public IP address of the EC2 instance"
+  value       = aws_instance.this.public_ip
 }
