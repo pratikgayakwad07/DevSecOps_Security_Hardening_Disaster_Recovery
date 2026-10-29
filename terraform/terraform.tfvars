@@ -4,5 +4,5 @@ github_repository  = "pratikgayakwad07/DevSecOps_Security_Hardening_Disaster_Rec
 github_ref         = "main"
 state_bucket_arn   = "arn:aws:s3:::terraform-state-bucket-131"
 audit_bucket_name  = "pratik-devsecops-audit-20241028"
-alert_email        = "pratikgayakwad322@gmail.com"
+alert_email        = ""
 enable_nat_gateway = true
