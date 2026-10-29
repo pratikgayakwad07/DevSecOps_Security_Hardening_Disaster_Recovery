@@ -105,3 +105,4 @@ variable "tags" {
   type    = map(string)
   default = { Environment = "sandbox", Owner = "platform-team" }
 }
+

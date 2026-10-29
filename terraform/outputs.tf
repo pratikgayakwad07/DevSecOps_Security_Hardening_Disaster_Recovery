@@ -5,3 +5,4 @@ output "instance_id" { value = module.compute.instance_id }
 output "instance_private_ip" { value = module.compute.private_ip }
 output "security_alert_topic_arn" { value = module.security_monitoring.security_alert_topic_arn }
 output "cloudtrail_name" { value = module.security_monitoring.cloudtrail_name }
+output "instance_public_ip" { value = module.compute.public_ip }

@@ -41,7 +41,7 @@ module "compute" {
   source                     = "./modules/compute"
   project_name               = var.project_name
   vpc_id                     = module.vpc.vpc_id
-  private_subnet_ids         = module.vpc.private_subnet_ids
+  public_subnet_ids          = module.vpc.public_subnet_ids
   instance_type              = var.instance_type
   ami_id                     = data.aws_ami.ubuntu_lts.id
   allowed_app_cidr           = var.allowed_app_cidr
